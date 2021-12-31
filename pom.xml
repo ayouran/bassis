@@ -31,87 +31,88 @@
         <module>bassis-tools</module>
         <module>bassis-bean</module>
         <module>bassis-data</module>
-        <module>bassis-boot</module>
-        <module>bassis-test</module>
+        <!--暂时移除掉-->
+        <!--        <module>bassis-boot</module>-->
+        <!--        <module>bassis-test</module>-->
     </modules>
     <dependencyManagement>
-          <dependencies>
-              <dependency>
-                  <groupId>org.slf4j</groupId>
-                  <artifactId>slf4j-api</artifactId>
-                  <version>${slf4j-api.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>ch.qos.logback</groupId>
-                  <artifactId>logback-classic</artifactId>
-                  <version>${logback-classic.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>ch.qos.logback</groupId>
-                  <artifactId>logback-core</artifactId>
-                  <version>${logback-core.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>com.google.code.gson</groupId>
-                  <artifactId>gson</artifactId>
-                  <version>${gson.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>cglib</groupId>
-                  <artifactId>cglib</artifactId>
-                  <version>${cglib.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>javax.servlet</groupId>
-                  <artifactId>javax.servlet-api</artifactId>
-                  <version>${servlet-api.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>org.apache.tomcat.embed</groupId>
-                  <artifactId>tomcat-embed-core</artifactId>
-                  <version>${tomcat.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>org.apache.tomcat.embed</groupId>
-                  <artifactId>tomcat-embed-jasper</artifactId>
-                  <version>${tomcat.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>org.apache.tomcat</groupId>
-                  <artifactId>tomcat-util</artifactId>
-                  <version>${tomcat.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>mysql</groupId>
-                  <artifactId>mysql-connector-java</artifactId>
-                  <version>${mysql.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>com.bassis.parent</groupId>
-                  <artifactId>bassis-tools</artifactId>
-                  <version>${bassis-tools.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>com.bassis.parent</groupId>
-                  <artifactId>bassis-bean</artifactId>
-                  <version>${bassis-bean.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>com.bassis.parent</groupId>
-                  <artifactId>bassis-data</artifactId>
-                  <version>${bassis-data.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>com.bassis.parent</groupId>
-                  <artifactId>bassis-boot</artifactId>
-                  <version>${bassis-boot.version}</version>
-              </dependency>
-              <dependency>
-                  <groupId>com.bassis.parent</groupId>
-                  <artifactId>bassis-test</artifactId>
-                  <version>${bassis-test.version}</version>
-              </dependency>
-          </dependencies>
+        <dependencies>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback-classic.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>${cglib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${servlet-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>${tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-jasper</artifactId>
+                <version>${tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-util</artifactId>
+                <version>${tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bassis.parent</groupId>
+                <artifactId>bassis-tools</artifactId>
+                <version>${bassis-tools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bassis.parent</groupId>
+                <artifactId>bassis-bean</artifactId>
+                <version>${bassis-bean.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bassis.parent</groupId>
+                <artifactId>bassis-data</artifactId>
+                <version>${bassis-data.version}</version>
+            </dependency>
+            <!--            <dependency>-->
+            <!--                <groupId>com.bassis.parent</groupId>-->
+            <!--                <artifactId>bassis-boot</artifactId>-->
+            <!--                <version>${bassis-boot.version}</version>-->
+            <!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>com.bassis.parent</groupId>-->
+            <!--                <artifactId>bassis-test</artifactId>-->
+            <!--                <version>${bassis-test.version}</version>-->
+            <!--            </dependency>-->
+        </dependencies>
     </dependencyManagement>
 
     <distributionManagement>
