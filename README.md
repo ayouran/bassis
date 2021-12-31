@@ -113,3 +113,6 @@ bassis
 ### bassis_hibernate
 * 多数据源jdbc
 * 事务分组支持提交、回滚等功能
+
+### 其他问题
+* 编译及打包报错，增加`maven`运行参数 `-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true`
