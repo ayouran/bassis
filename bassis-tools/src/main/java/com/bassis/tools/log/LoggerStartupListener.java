@@ -19,6 +19,7 @@ public class LoggerStartupListener extends ContextAwareBase implements LoggerCon
      * 初始化读取器
      */
     static FileProperties fileProperties = FileProperties.getInstance();
+    private static final String ROOT_PATH = "/application.properties";
     private static final String DEFAULT_PROJECT_NAME = "bassis";
     private static final String DEFAULT_CHARSET = "UTF-8";
     private static final String DEFAULT_LEVEL = "DEBUG";
@@ -53,6 +54,7 @@ public class LoggerStartupListener extends ContextAwareBase implements LoggerCon
     @Override
     public void start() {
         if (started) return;
+        fileProperties.read(ROOT_PATH);
         String logsHome = fileProperties.getProperty("bassis.logs.home");
         String charset = fileProperties.getProperty("bassis.logs.charset");
         String level = fileProperties.getProperty("bassis.logs.level");
