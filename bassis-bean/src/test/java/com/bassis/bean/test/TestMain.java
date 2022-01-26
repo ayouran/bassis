@@ -28,9 +28,9 @@ public class TestMain {
         //启动 BeanFactory
 //        beanFactory = BeanFactory.startBeanFactory("com.bassis.bean.test");
         beanFactory = BeanFactory.startBeanFactory();
-        testCreateBean();
+//        testCreateBean();
 //        testForAutowired();
-//        testAop();
+        testAop();
 //        testApplicationEvent();
 //        testCopyBean();
     }

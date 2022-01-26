@@ -1,5 +1,6 @@
 package com.bassis.bean.annotation.impl;
 
+import com.bassis.bean.BeanFactory;
 import com.bassis.bean.annotation.Aop;
 import com.bassis.bean.aop.AopService;
 import com.bassis.bean.proxy.ProxyFactory;
@@ -97,8 +98,7 @@ public class AopImpl {
                 CustomException.throwOut(position + " @AopService methods is null , aop exit");
             }
             assert aclass != null;
-            //TODO  这里需要将代理更改为beanfactory,需要有注入能力
-            this.aopObject = ProxyFactory.invoke(aclass);
+            this.aopObject =  BeanFactory.getInstance().getBeanLast(aclass).getObject();
             assert methods != null;
             methods.forEach(m -> match(Reflection.getMethod(true, aopService, m.getName(), m.getParameterTypes())));
             if (null == preHandle
