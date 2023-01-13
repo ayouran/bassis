@@ -20,5 +20,5 @@ public @interface RequestMapping {
     /**
      * 请求方式
      */
-    RequestMethodEnum[] method() default {};
+    RequestMethodEnum[] method() default {RequestMethodEnum.GET};
 }

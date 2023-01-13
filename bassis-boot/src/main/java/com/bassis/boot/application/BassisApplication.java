@@ -6,7 +6,6 @@ import com.bassis.boot.common.ApplicationConfig;
 import com.bassis.boot.common.Declaration;
 import com.bassis.boot.common.MainArgs;
 import com.bassis.tools.exception.CustomException;
-import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

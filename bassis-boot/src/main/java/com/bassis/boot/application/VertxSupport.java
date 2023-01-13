@@ -1,17 +1,17 @@
 package com.bassis.boot.application;
 
-import com.bassis.bean.event.ApplicationListener;
 import com.bassis.boot.common.ApplicationConfig;
 import com.bassis.boot.common.Declaration;
 import com.bassis.boot.common.HttpPage;
 import com.bassis.boot.common.MainArgs;
-import com.bassis.boot.event.ControllerEvent;
 import com.bassis.boot.web.BassisHttp;
+import com.bassis.boot.web.common.enums.RequestMethodEnum;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.ReflexUtils;
 import com.bassis.tools.string.StringUtils;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -108,18 +108,20 @@ public class VertxSupport {
     /**
      * 增加一个路由
      *
-     * @param path     相对路由地址
-     * @param function 回调函数
-     * @param <T>      入参
-     * @param <R>      出参
+     * @param path          相对路由地址
+     * @param requestMethod 路由的请求方式
+     * @param function      回调函数
+     * @param <T>           入参
+     * @param <R>           出参
      */
     @SuppressWarnings("all")
-    protected <T, R> void addRouter(String path, Consumer<RoutingContext> consumer) {
+    protected <T, R> void addRouter(String path, RequestMethodEnum requestMethod, Consumer<RoutingContext> consumer) {
         path = getRouterPath(path);
-        logger.info("addRouter :{} ", path);
         String finalPath = path;
-        router.get(path).handler(req -> {
-            logger.info("HTTP:" + finalPath);
+        HttpMethod httpMethod = getHttpMethod(requestMethod);
+        logger.info("HTTP addRouter :{} httpMethod:{}", finalPath, httpMethod.name());
+        router.route(httpMethod, path).handler(req -> {
+            logger.info("HTTP routerHandler :{} httpMethod:{}", finalPath, req.request().method());
             consumer.accept(req);
         });
     }
@@ -159,7 +161,11 @@ public class VertxSupport {
      * 注册所有的业务路由
      */
     private void registerRouterService() {
-        bassisHttp.getPaths().forEach(this::addRouterService);
+        bassisHttp.getRequestPaths().forEach((key, value) -> {
+            for (RequestMethodEnum requestMethod : value.getRequestMethods()) {
+                this.addRouterService(key, requestMethod);
+            }
+        });
     }
 
     /**
@@ -168,16 +174,18 @@ public class VertxSupport {
      * @param path 路由
      */
     @SuppressWarnings("all")
-    private void addRouterService(String path) {
+    private void addRouterService(String path, RequestMethodEnum requestMethod) {
         AtomicReference<Object> resObj = new AtomicReference<>();
-        this.addRouterPage(path, null, (req) -> {
+        this.addRouterPage(path, requestMethod, null, (req) -> {
             AtomicBoolean lock = new AtomicBoolean(false);
             HttpServerRequest request = req.request();
             request.bodyHandler(body -> {
-                lock.set(true);
-                JsonObject jsonObject = new JsonObject();
-                if (body != null) jsonObject = new JsonObject(body);
-                resObj.set(bassisHttp.service(path, jsonObject.mapTo(LinkedHashMap.class)));
+                if (body != null && body.length() > 0) {
+                    lock.set(true);
+                    JsonObject jsonObject = new JsonObject();
+                    if (body != null) jsonObject = new JsonObject(body);
+                    resObj.set(bassisHttp.service(path, jsonObject.mapTo(LinkedHashMap.class)));
+                }
             });
             if (!lock.get()) {
                 LinkedHashMap<String, Object> requestParameters = new LinkedHashMap<>();
@@ -197,9 +205,9 @@ public class VertxSupport {
      * 配置默认的错误页面
      */
     private void defaultErrorPage() {
-        this.addRouterPage("/404", HttpPage.ERROR_404, (req) -> null);
-        this.addRouterPage("/500", HttpPage.ERROR_500, (req) -> null);
-        this.addRouterPage("/503", HttpPage.ERROR_503, (req) -> null);
+        this.addRouterPage("/404", null, HttpPage.ERROR_404, (req) -> null);
+        this.addRouterPage("/500", null, HttpPage.ERROR_500, (req) -> null);
+        this.addRouterPage("/503", null, HttpPage.ERROR_503, (req) -> null);
     }
 
     /**
@@ -212,10 +220,28 @@ public class VertxSupport {
     }
 
     /**
+     * HttpMethod 转换
+     *
+     * @param requestMethod 框架定义
+     * @return vertx定义
+     */
+    private HttpMethod getHttpMethod(RequestMethodEnum requestMethod) {
+        if (requestMethod == null || RequestMethodEnum.GET == requestMethod) return HttpMethod.GET;
+        else if (RequestMethodEnum.HEAD == requestMethod) return HttpMethod.HEAD;
+        else if (RequestMethodEnum.POST == requestMethod) return HttpMethod.POST;
+        else if (RequestMethodEnum.PUT == requestMethod) return HttpMethod.PUT;
+        else if (RequestMethodEnum.PATCH == requestMethod) return HttpMethod.PATCH;
+        else if (RequestMethodEnum.DELETE == requestMethod) return HttpMethod.DELETE;
+        else if (RequestMethodEnum.OPTIONS == requestMethod) return HttpMethod.OPTIONS;
+        else if (RequestMethodEnum.TRACE == requestMethod) return HttpMethod.TRACE;
+        else return HttpMethod.GET;
+    }
+
+    /**
      * 配置请求返回一个页面
      */
-    protected <T, R> void addRouterPage(String path, String htmlFile, Function<RoutingContext, R> function) {
-        this.addRouter(path, (req) -> {
+    protected <T, R> void addRouterPage(String path, RequestMethodEnum requestMethod, String htmlFile, Function<RoutingContext, R> function) {
+        this.addRouter(path, requestMethod, (req) -> {
             HttpServerResponse response = req.response();
             if (!StringUtils.isEmptyString(htmlFile)) {
                 if (function != null) function.apply(req);
@@ -243,6 +269,6 @@ public class VertxSupport {
         if (StringUtils.isEmptyString(locationPath)) {
             locationPath = "/index";
         }
-        this.addRouterPage(locationPath, HttpPage.INDEX, (req) -> null);
+        this.addRouterPage(locationPath, null, HttpPage.INDEX, (req) -> null);
     }
 }

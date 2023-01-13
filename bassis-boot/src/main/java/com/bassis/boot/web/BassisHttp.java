@@ -3,6 +3,7 @@ package com.bassis.boot.web;
 import com.bassis.bean.BeanFactory;
 import com.bassis.bean.common.Bean;
 import com.bassis.boot.common.HttpPage;
+import com.bassis.boot.common.RequestPath;
 import com.bassis.boot.web.annotation.impl.ControllerImpl;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.Reflection;
@@ -13,7 +14,6 @@ import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Servlet 核心容器
@@ -38,8 +38,8 @@ public class BassisHttp {
     /**
      * 获取路由列表
      */
-    public Set<String> getPaths() {
-        return controller.getPaths();
+    public Map<String, RequestPath> getRequestPaths() {
+        return controller.getRequestPaths();
     }
 
     /**
