@@ -55,12 +55,15 @@ bassis
 
 ## 用到的第三方jar包：
 
-* log4j 1.2.17
+* ~log4j 1.2.17~
 * gson 2.8.0
 * cglib 3.2.12
 * mysql-connector-java 5.1.40
 * ~~servlet-api 4.0.0~~
 * ~~tomcat 8.5.35~~
+* logback 1.3.0-alpha5
+* slf4j-api 2.0.0-alpha1
+* vertx-web 4.2.3
 
 ## 目前进度(已完成)：
  
@@ -74,7 +77,8 @@ bassis
 * string工具
 * 并发测试工具
 * http请求工具
-* log4j默认配置
+* ~~log4j默认配置~~
+* logback默认配置
 
 ### bassis_bean
 * class扫描器
