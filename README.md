@@ -96,7 +96,7 @@ bassis
 
 ### bassis_boot
 * ~~main函数启动tomcat~~
-* main函数启动（无需注解）
+* 静态`main`函数启动（无需注解）
 * 默认基本启动配置
 * ~~默认filter及编码filter~~
 * ~~默认servlet容器~~
