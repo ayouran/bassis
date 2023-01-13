@@ -2,7 +2,7 @@ package com.bassis.bean.event;
 
 import com.bassis.tools.reflex.Reflection;
 
-import java.util.*;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 

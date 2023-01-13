@@ -38,14 +38,8 @@ public class AutoConfig {
             String contextPath = FileProperties.getPropertiesFlesh(Declaration.bassis_context_path);
             if (!StringUtils.isEmptyString(contextPath)) appApplicationConfig.setContextPath(contextPath);
 
-            String urlPattern = FileProperties.getPropertiesFlesh(Declaration.bassis_url_pattern);
-            if (!StringUtils.isEmptyString(urlPattern)) appApplicationConfig.setUrlPattern(urlPattern);
-
             String scanRoot = FileProperties.getPropertiesFlesh(Declaration.bassis_scan_root);
             if (!StringUtils.isEmptyString(scanRoot)) appApplicationConfig.setScanRoot(scanRoot);
-
-            String servletName = FileProperties.getPropertiesFlesh(Declaration.bassis_server_name);
-            if (!StringUtils.isEmptyString(servletName)) appApplicationConfig.setServletName(servletName);
 
             String startSchema = FileProperties.getPropertiesFlesh(Declaration.bassis_start_schema);
             if (!StringUtils.isEmptyString(startSchema)) appApplicationConfig.setStartSchema(startSchema);

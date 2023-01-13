@@ -1,5 +1,7 @@
 package com.bassis.boot.common;
 
+import io.vertx.core.http.HttpServerOptions;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +15,6 @@ public class ApplicationConfig implements Serializable {
      * 传入的启动类 必须传入
      */
     Class aClass;
-
     //######默认参数
     /**
      * 启动端口 默认
@@ -23,10 +24,6 @@ public class ApplicationConfig implements Serializable {
      * 上下文前缀 默认
      */
     String contextPath = "";
-    /**
-     * 请求路径后缀 默认
-     */
-    String urlPattern = "";
     /**
      * 请求系统服务路径后缀 默认
      */
@@ -43,17 +40,16 @@ public class ApplicationConfig implements Serializable {
      */
     String scanRoot;
     /**
-     * servlet名称
+     * http服务系统配置
      */
-    String servletName = "/";
+    HttpServerOptions httpServerOptions;
 
-
-    public String getServletName() {
-        return servletName;
+    public HttpServerOptions getHttpServerOptions() {
+        return httpServerOptions;
     }
 
-    public void setServletName(String servletName) {
-        this.servletName = servletName;
+    public void setHttpServerOptions(HttpServerOptions httpServerOptions) {
+        this.httpServerOptions = httpServerOptions;
     }
 
     public Integer getPort() {
@@ -62,14 +58,6 @@ public class ApplicationConfig implements Serializable {
 
     public void setPort(Integer port) {
         this.port = port;
-    }
-
-    public String getUrlPattern() {
-        return urlPattern;
-    }
-
-    public void setUrlPattern(String urlPattern) {
-        this.urlPattern = urlPattern;
     }
 
     public String getScanRoot() {
@@ -115,8 +103,5 @@ public class ApplicationConfig implements Serializable {
     public void rootClass(Class aClass) {
         this.scanRoot = aClass.getPackage().getName();
         this.aClass = aClass;
-        this.servletName = aClass.getSimpleName();
     }
-
-
 }

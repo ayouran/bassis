@@ -1,11 +1,11 @@
 package com.bassis.tools.json;
 
-import java.lang.reflect.Type;
-import java.util.Map;
-
 import com.bassis.tools.exception.CustomException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.lang.reflect.Type;
+import java.util.Map;
 
 /**
  * gson工具包

@@ -3,6 +3,9 @@ package com.bassis.boot.web.annotation.impl;
 import com.bassis.bean.BeanFactory;
 import com.bassis.bean.Scanner;
 import com.bassis.bean.annotation.Component;
+import com.bassis.bean.event.ApplicationEventPublisher;
+import com.bassis.bean.event.domain.AutowiredEvent;
+import com.bassis.boot.event.ControllerEvent;
 import com.bassis.boot.web.annotation.Controller;
 import com.bassis.boot.web.annotation.RequestMapping;
 import com.bassis.boot.web.annotation.RequestParam;
@@ -24,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ControllerImpl {
     private static Logger logger = LoggerFactory.getLogger(ControllerImpl.class);
+
     private static class LazyHolder {
         private static final ControllerImpl INSTANCE = new ControllerImpl();
     }
@@ -33,6 +37,8 @@ public class ControllerImpl {
     }
 
     final static BeanFactory beanFactory = BeanFactory.getInstance();
+    //请求路径
+    private static Set<String> paths = new HashSet<>();
     //请求路径/类
     private static Map<String, Class> clazMap = new ConcurrentHashMap<>();
     //请求路径/方法
@@ -50,6 +56,17 @@ public class ControllerImpl {
                 CustomException.throwOut("@Controller分析异常：", e);
             }
         }
+        //发送 Controller 资源就绪事件
+        ApplicationEventPublisher.publishEvent(new ControllerEvent(true));
+    }
+
+    /**
+     * 获取所有的路由列表-只读
+     *
+     * @return 路由列表
+     */
+    public Set<String> getPaths() {
+        return new HashSet<>(paths);
     }
 
     /**
@@ -121,6 +138,8 @@ public class ControllerImpl {
             clazMap.put(method_path, clz);
             methodMap.put(method_path, method);
         }
+        paths.addAll(clazMap.keySet());
+        paths.addAll(methodMap.keySet());
         Map<Method, List<String>> methodListMap = getMethodParameterName(clz, methodSet);
         //分析方法内的参数注解
         methodListMap.forEach(ControllerImpl::getMethodParameterByAnnotation);
@@ -149,6 +168,13 @@ public class ControllerImpl {
         parameterMap.put(method, objectList);
     }
 
+    /**
+     * 批量获取方法类的参数注解
+     *
+     * @param clazz     类
+     * @param methodSet 方法
+     * @return 返回数据格式
+     */
     private static Map<Method, List<String>> getMethodParameterName(Class<?> clazz, Set<Method> methodSet) {
         Map<String, List<Object>> methodTypeMap = new HashMap<>();
         Map<Method, List<String>> methods = new HashMap<>();
@@ -170,7 +196,7 @@ public class ControllerImpl {
             methodTypeMap.put(method.getName(), list);
         });
         assert classReader != null;
-        classReader.accept(new ClassVisitor(Opcodes.ASM4) {
+        classReader.accept(new ClassVisitor(Opcodes.ASM5) {
             @Override
             public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
                 //方法级别
@@ -182,7 +208,7 @@ public class ControllerImpl {
                 Type[] types = (Type[]) objectList.get(1);
                 if (!Arrays.equals(argumentTypes, types)) return null;
                 List<String> parameterList = new ArrayList<>();
-                MethodVisitor v = new MethodVisitor(Opcodes.ASM4) {
+                MethodVisitor v = new MethodVisitor(Opcodes.ASM5) {
                     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
                         //参数级别
                         // 静态方法第一个参数就是方法的参数，如果是实例方法，第一个参数是this

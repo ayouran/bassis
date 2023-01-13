@@ -3,7 +3,6 @@ package com.bassis.bean.annotation.impl;
 import com.bassis.bean.BeanFactory;
 import com.bassis.bean.annotation.Aop;
 import com.bassis.bean.aop.AopService;
-import com.bassis.bean.proxy.ProxyFactory;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.Reflection;
 import com.bassis.tools.string.StringUtils;

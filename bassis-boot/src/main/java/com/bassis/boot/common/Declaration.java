@@ -17,10 +17,6 @@ public interface Declaration {
      */
     String encoding = "UTF-8";
     /**
-     * 启动函数参数
-     */
-    String mainArgs = "mainArgs";
-    /**
      * 启动模式-web
      */
     String startSchemaWeb = "web";
@@ -67,12 +63,6 @@ public interface Declaration {
      * bassis.context.path
      */
     String bassis_context_path = "bassis.context.path";
-
-    /**
-     * 请求后缀
-     * bassis.url.pattern
-     */
-    String bassis_url_pattern = "bassis.url.pattern";
 
     /**
      * bean扫描起点

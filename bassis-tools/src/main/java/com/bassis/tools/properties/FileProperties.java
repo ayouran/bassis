@@ -1,16 +1,10 @@
 package com.bassis.tools.properties;
 
 import com.bassis.tools.exception.CustomException;
-import com.bassis.tools.reflex.ReflexUtils;
 
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
