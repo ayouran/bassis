@@ -7,6 +7,11 @@ bassis
 * 技术为了形成系统，站到更高的层面而学习，而不是为了工作
 
 ### 更新说明
+- 2023-01-13
+  - 更新`jdk`依赖为`11`,后续不在支持`jdk8`
+  - 更新`asm api`为`asm5`
+  - 重构基于`vertx`开发的`bassis_boot`，并通过测试
+  - 删除`bassis_boot`中对`tomcat`的所有支持和依赖
 - 2021-02-01 
   - 更新日志框架为 ```slf4j``` 使用```logback```实现
     - 增加```logback```集成到当前框架
@@ -47,8 +52,8 @@ bassis
 * gson 2.8.0
 * cglib 3.2.12
 * mysql-connector-java 5.1.40
-* servlet-api 4.0.0
-* tomcat 8.5.35
+* ~~servlet-api 4.0.0~~
+* ~~tomcat 8.5.35~~
 
 ## 目前进度(已完成)：
  
@@ -78,13 +83,13 @@ bassis
 * 接口到实现类转换注入
 
 ### bassis_boot
-* main函数启动tomcat
+* ~~main函数启动tomcat~~
 * 默认基本启动配置
-* 默认filter及编码filter
-* 默认servlet容器
+* ~~默认filter及编码filter~~
+* ~~默认servlet容器~~
 * @Controller 实现
 * 请求路径自动匹配bean实现
-* @Interceptor及Interceptor栈实现
+* ~~@Interceptor及Interceptor栈实现~~
 * @RequestMapping 实现
 * 数据装配与解析返回基本实现
 
@@ -103,7 +108,7 @@ bassis
 
 ### bassis_boot
 * 默认基本启动配置 需要支持个性化配置参数 -- 已完成
-* 默认servlet容器 需要作为bassis_web基础依赖入口 -- 已完成
+* ~~默认servlet容器 需要作为bassis_web基础依赖入口 -- 已完成~~
 * @Controller 需要重写ioc逻辑 要与@Component保持一致 -- 已完成
 * 请求路径自动匹配bean实现 需要优化路径存储已经寻址算法 -- 已完成
 * @Interceptor及Interceptor栈实现 需要调试来兼容最新的aop功能
