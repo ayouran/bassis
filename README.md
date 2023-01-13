@@ -1,5 +1,6 @@
 bassis
 ---------------------------
+### 当前项目为最新位置，旧地址请转到 [liuchengts/bassis](https://github.com/liuchengts/bassis)
 
 ### 目的在于开发出类似springboot使用方式的框架，同时加入其它特性，使其原生支持分布式，借此窥探java语言特性、jvm、spring实现方式，使技术广度和深度得到提升，对后续阅读理解spring、hibernate等开源框架有一个强大的基础，对jvm有一定的认知能力。
 
