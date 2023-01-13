@@ -162,7 +162,7 @@ public class VertxSupport {
      */
     private void registerRouterService() {
         bassisHttp.getRequestPaths().forEach((key, value) -> {
-            for (RequestMethodEnum requestMethod : value.getRequestMethods()) {
+            for (RequestMethodEnum requestMethod : value) {
                 this.addRouterService(key, requestMethod);
             }
         });

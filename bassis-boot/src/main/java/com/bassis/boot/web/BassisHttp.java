@@ -3,8 +3,8 @@ package com.bassis.boot.web;
 import com.bassis.bean.BeanFactory;
 import com.bassis.bean.common.Bean;
 import com.bassis.boot.common.HttpPage;
-import com.bassis.boot.common.RequestPath;
 import com.bassis.boot.web.annotation.impl.ControllerImpl;
+import com.bassis.boot.web.common.enums.RequestMethodEnum;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.Reflection;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ public class BassisHttp {
     /**
      * 获取路由列表
      */
-    public Map<String, RequestPath> getRequestPaths() {
+    public Map<String,  RequestMethodEnum[]> getRequestPaths() {
         return controller.getRequestPaths();
     }
 

@@ -4,11 +4,11 @@ import com.bassis.bean.BeanFactory;
 import com.bassis.bean.Scanner;
 import com.bassis.bean.annotation.Component;
 import com.bassis.bean.event.ApplicationEventPublisher;
-import com.bassis.boot.common.RequestPath;
 import com.bassis.boot.event.ControllerEvent;
 import com.bassis.boot.web.annotation.Controller;
 import com.bassis.boot.web.annotation.RequestMapping;
 import com.bassis.boot.web.annotation.RequestParam;
+import com.bassis.boot.web.common.enums.RequestMethodEnum;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.string.StringUtils;
 import org.objectweb.asm.*;
@@ -38,7 +38,7 @@ public class ControllerImpl {
 
     final static BeanFactory beanFactory = BeanFactory.getInstance();
     //请求路径
-    private static Map<String, RequestPath> pathMap = new ConcurrentHashMap<>();
+    private static Map<String, RequestMethodEnum[]> pathMap = new ConcurrentHashMap<>();
     //请求路径/类
     private static Map<String, Class> clazMap = new ConcurrentHashMap<>();
     //请求路径/方法
@@ -65,7 +65,7 @@ public class ControllerImpl {
      *
      * @return 路由列表
      */
-    public Map<String, RequestPath> getRequestPaths() {
+    public Map<String, RequestMethodEnum[]> getRequestPaths() {
         return new HashMap<>(pathMap);
     }
 
@@ -134,7 +134,7 @@ public class ControllerImpl {
             //检测是否重复url
             if (clazMap.containsKey(method_path)) CustomException.throwOut("控制器类异常，重复的url：" + method_path);
             if (methodMap.containsKey(method_path)) CustomException.throwOut("控制器方法异常，重复的url：" + method_path);
-            pathMap.put(method_path, new RequestPath(method_path, methodAnnotation.method()));
+            pathMap.put(method_path, methodAnnotation.method());
             //进行路径注册
             clazMap.put(method_path, clz);
             methodMap.put(method_path, method);
