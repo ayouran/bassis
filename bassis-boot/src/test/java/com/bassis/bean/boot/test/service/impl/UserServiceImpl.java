@@ -12,7 +12,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserDb userDb;
-
+    // 以下任意一种使用方式均可
 //    @Aop(aclass = UserAopServiceImpl.class)
     @Aop(aclass = UserAopServiceImpl.class, parameters = {"a", "b", "c"})
 //    @Aop(value = "userAopService")

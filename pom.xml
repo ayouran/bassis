@@ -85,6 +85,11 @@
                 <artifactId>bassis-data</artifactId>
                 <version>${bassis-data.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.bassis.parent</groupId>
+                <artifactId>bassis-boot</artifactId>
+                <version>${bassis-boot.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
