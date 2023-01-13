@@ -13,8 +13,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserDb userDb;
 
-//        @Aop(aclass = UserAopServiceImpl.class)
-        @Aop(aclass = UserAopServiceImpl.class, parameters = {"a", "b", "c"})
+//    @Aop(aclass = UserAopServiceImpl.class)
+    @Aop(aclass = UserAopServiceImpl.class, parameters = {"a", "b", "c"})
 //    @Aop(value = "userAopService")
     @Override
     public String add(String name) {
