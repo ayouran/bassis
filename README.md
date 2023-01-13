@@ -8,10 +8,16 @@ bassis
 
 ### 更新说明
 - 2023-01-13
-  - 更新`jdk`依赖为`11`,后续不在支持`jdk8`
+  - 更新`jdk`依赖为`11`,后续不再支持`jdk8`
   - 更新`asm api`为`asm5`
   - 重构基于`vertx`开发的`bassis_boot`，并通过测试
   - 删除`bassis_boot`中对`tomcat`的所有支持和依赖
+  - 重构`http`请求方式支持，允许一个路由同时存在多种请求方式
+  - 丢弃`http`拦截器与过滤器，全部采用`aop`直接实现
+  - 增加`http`快速寻址与快速建立`vertx http`路由的算法
+  - 启动模式完全符合`springBoot`的使用习惯（启动类上不需要任何注解）
+  - 增强`aop`功能中可以追加任意参数及方法本身的入参进入`aop`方法供其使用
+
 - 2021-02-01 
   - 更新日志框架为 ```slf4j``` 使用```logback```实现
     - 增加```logback```集成到当前框架
@@ -111,9 +117,10 @@ bassis
 * ~~默认servlet容器 需要作为bassis_web基础依赖入口 -- 已完成~~
 * @Controller 需要重写ioc逻辑 要与@Component保持一致 -- 已完成
 * 请求路径自动匹配bean实现 需要优化路径存储已经寻址算法 -- 已完成
-* @Interceptor及Interceptor栈实现 需要调试来兼容最新的aop功能
+* ~~@Interceptor及Interceptor栈实现 需要调试来兼容最新的aop功能 -- 舍弃~~
 * @RequestMapping 实现 需要配合路径自动匹配 -- 已完成
 * 数据装配与解析返回基本实现 需要重写定义大部分返回逻辑，抽离页面与数据的耦合 -- 已完成
+* 增加`http`的认证（`cookie、token`等） -- 未完成
 
 ### bassis_hibernate
 * 多数据源jdbc
