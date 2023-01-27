@@ -41,7 +41,7 @@ public class BassisApplication {
     /**
      * 停止框架
      */
-    private static void stop() {
+    public static void stop() {
         ApplicationEventPublisher.publishEvent(new ModuleEvent(ModuleEnum.BOOT, ModuleStateEnum.DESTROY));
     }
 }
