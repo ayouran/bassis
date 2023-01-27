@@ -12,6 +12,7 @@ import com.bassis.bean.event.domain.BassisEvent;
 import com.bassis.boot.web.BassisHttp;
 import com.bassis.boot.web.common.enums.RequestMethodEnum;
 import com.bassis.tools.exception.CustomException;
+import com.bassis.tools.json.GsonUtils;
 import com.bassis.tools.reflex.ReflexUtils;
 import com.bassis.tools.string.StringUtils;
 import io.vertx.core.MultiMap;
@@ -226,15 +227,19 @@ public class VertxSupport {
         this.addRouterPage(path, requestMethod, null, (req) -> {
             AtomicBoolean lock = new AtomicBoolean(false);
             HttpServerRequest request = req.request();
+            HttpServerResponse response = req.response();
             request.bodyHandler(body -> {
                 if (body != null && body.length() > 0) {
                     lock.set(true);
                     JsonObject jsonObject = new JsonObject();
                     if (body != null) jsonObject = new JsonObject(body);
-                    resObj.set(bassisHttp.service(path, jsonObject.mapTo(LinkedHashMap.class)));
+                    LinkedHashMap<String, Object> requestParameters = new LinkedHashMap<>();
+                    requestParameters.put("@body", jsonObject.toString());
+                    resObj.set(bassisHttp.service(path, requestParameters));
                 }
             });
-            if (!lock.get()) {
+            String contentType = request.getHeader("content-type");
+            if (!lock.get() && (contentType == null || !contentType.contains("application/json"))) {
                 LinkedHashMap<String, Object> requestParameters = new LinkedHashMap<>();
                 MultiMap multiMap = request.params();
                 if (multiMap != null && !multiMap.isEmpty()) {
@@ -244,7 +249,12 @@ public class VertxSupport {
                 }
                 resObj.set(bassisHttp.service(path, requestParameters));
             }
-            return resObj.get();
+            String accept = response.headers().get("accept");
+            if (StringUtils.isEmptyString(accept)) {
+                accept = response.headers().get("content-type");
+            }
+            if (accept.contains("application/json")) return GsonUtils.objectToJson(resObj.get());
+            else return resObj.get();
         });
     }
 

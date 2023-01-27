@@ -6,7 +6,9 @@ import com.bassis.boot.common.HttpPage;
 import com.bassis.boot.web.annotation.impl.ControllerImpl;
 import com.bassis.boot.web.common.enums.RequestMethodEnum;
 import com.bassis.tools.exception.CustomException;
+import com.bassis.tools.json.GsonUtils;
 import com.bassis.tools.reflex.Reflection;
+import com.bassis.tools.reflex.ReflexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +40,7 @@ public class BassisHttp {
     /**
      * 获取路由列表
      */
-    public Map<String,  RequestMethodEnum[]> getRequestPaths() {
+    public Map<String, RequestMethodEnum[]> getRequestPaths() {
         return controller.getRequestPaths();
     }
 
@@ -70,27 +72,31 @@ public class BassisHttp {
             List<Object> parameters = ControllerImpl.getMapParameter(method);
             //请求参数值，参数值类型
             assert parameters != null;
-            Map<Object, Object> mapParameters = new LinkedHashMap<>(parameters.size());
             //验证方法参数
             int count = parameters.size() / 3;
             if (count <= 0) count = 1;
-            for (int i = 0; i < count; i = i + 3) {
-                String name = (String) parameters.get(i);
-                Class<?> type = (Class<?>) parameters.get(i + 1);
-                Boolean required = (Boolean) parameters.get(i + 2);
+            Object[] arrayParameters = new Object[count];
+            for (int i = 0; i < count; i++) {
+                int index = i * 3;
+                String name = (String) parameters.get(index);
+                Class<?> type = (Class<?>) parameters.get(index + 1);
+                Boolean required = (Boolean) parameters.get(index + 2);
+                if (!ReflexUtils.isWrapClass(type)) {
+                    name = "@body";
+                }
                 //检查必须参数
                 if (!requestParameters.containsKey(name) && required)
                     CustomException.throwOut("method required parameter : " + name + " is null [" + requestPath + "]");
-                String[] ps = (String[]) requestParameters.get(name);
-                if (null == ps) {
-                    mapParameters.put(null, type);
+                Object ps = requestParameters.get(name);
+                if (!ReflexUtils.isWrapClass(type)) {
+                    arrayParameters[i] = GsonUtils.jsonToObject((String) ps, type);
                 } else {
-                    mapParameters.put(ps[0], type);
+                    arrayParameters[i] = ps;
                 }
             }
             //交由bean进行生产
             Bean bean = beanFactory.createBean(actionCla);
-            resInvoke = Reflection.invokeMethod(bean.getObject(), method, mapParameters.keySet().toArray());
+            resInvoke = Reflection.invokeMethod(bean.getObject(), method, arrayParameters);
             logger.info("resInvoke : " + resInvoke);
             //清除资源
             beanFactory.removeBean(bean);

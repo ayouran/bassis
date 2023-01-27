@@ -7,6 +7,7 @@ import com.bassis.bean.event.ApplicationEventPublisher;
 import org.bs.db.UserDb;
 import org.bs.event.TestEvent;
 import org.bs.service.UserService;
+import org.bs.vo.JsonVO;
 
 @Component
 public class UserServiceImpl implements UserService {
@@ -20,8 +21,13 @@ public class UserServiceImpl implements UserService {
 //    @Aop(value = "userAopService", parameters = {"a", "b", "c"})
     @Aop(value = "userAopService")
     @Override
-    public String add(String name) {
+    public String add(String ds, String ds2) {
         ApplicationEventPublisher.publishEvent(new TestEvent(new Object()));
-        return userDb.add(name) + this.getClass().getSimpleName();
+        return userDb.add(ds) + "  |  " + userDb.add(ds2) + "  " + this.getClass().getSimpleName();
+    }
+
+    @Override
+    public JsonVO json(JsonVO jsonVO) {
+        return jsonVO;
     }
 }
