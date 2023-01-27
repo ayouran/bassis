@@ -8,7 +8,7 @@ import com.bassis.boot.common.ApplicationConfig;
 import com.bassis.boot.common.Declaration;
 import com.bassis.boot.common.HttpPage;
 import com.bassis.boot.common.MainArgs;
-import com.bassis.boot.event.BassisEvent;
+import com.bassis.bean.event.domain.BassisEvent;
 import com.bassis.boot.web.BassisHttp;
 import com.bassis.boot.web.common.enums.RequestMethodEnum;
 import com.bassis.tools.exception.CustomException;
