@@ -1,11 +1,15 @@
 package com.bassis.bean;
 
-import com.bassis.bean.annotation.impl.AutowiredImpl;
 import com.bassis.bean.annotation.impl.ComponentImpl;
+import com.bassis.bean.annotation.impl.ListenerImpl;
 import com.bassis.bean.common.Bean;
+import com.bassis.bean.common.enums.AutowiredEnum;
+import com.bassis.bean.common.enums.ModuleEnum;
+import com.bassis.bean.common.enums.ModuleStateEnum;
 import com.bassis.bean.common.enums.ScopeEnum;
 import com.bassis.bean.event.ApplicationEventPublisher;
 import com.bassis.bean.event.domain.AutowiredEvent;
+import com.bassis.bean.event.domain.ModuleEvent;
 import com.bassis.bean.proxy.ProxyFactory;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.properties.FileProperties;
@@ -13,6 +17,7 @@ import com.bassis.tools.reflex.Reflection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -57,14 +62,14 @@ public class BeanFactory {
     private static final Map<Class<?>, Bean> singletonFactories = new ConcurrentHashMap<>(16);
 
     public static final String CGLIB_TAG = "$$EnhancerByCGLIB$$";
-    static AutowiredImpl autowired;
 
     static {
         //初始化bean拷贝器
         CachedBeanCopier.getInstance();
         //初始化全局事件组件
         ApplicationEventPublisher.getInstance();
-        autowired = AutowiredImpl.getInstance();
+        //初始化全局监听器
+        ListenerImpl.getInstance();
     }
 
     /**
@@ -74,15 +79,16 @@ public class BeanFactory {
      * @return 返回 BeanFactory
      */
     public static BeanFactory startBeanFactory(String scanPath) {
+        logger.info("BeanFactory start");
+        ApplicationEventPublisher.publishEvent(new ModuleEvent(ModuleEnum.BEAN, ModuleStateEnum.INIT));
         //初始化扫描器
-        Scanner.startScan(scanPath);
+        Scanner.startScan(String.join(",", "com.bassis", scanPath));
         //开始component扫描
         ComponentImpl.getInstance();
         //将剩下没有循环依赖的bean放入存储器
         getInstance().addBeanSingletonFactories();
-        ApplicationEventPublisher.addListener(autowired);
         //发布资源就绪事件
-        ApplicationEventPublisher.publishEvent(new AutowiredEvent(Object.class));
+        ApplicationEventPublisher.publishEvent(new AutowiredEvent(AutowiredEnum.RESOURCE_READY));
         return getInstance();
     }
 
@@ -169,8 +175,7 @@ public class BeanFactory {
             Bean bean = new Bean(ProxyFactory.invoke(aclass));
             singletonFactories.put(aclass, bean);
             //检测资源注入,并且加入事件
-            autowired.analyseFields(bean.getObject(), true);
-            ApplicationEventPublisher.publishEvent(new AutowiredEvent(Object.class));
+            ApplicationEventPublisher.publishEvent(new AutowiredEvent(bean.getObject(), AutowiredEnum.INJECT, true));
         }
     }
 
@@ -375,7 +380,8 @@ public class BeanFactory {
                 return null;
             }
             //过滤cglib代理
-            List<Class<?>> classList = classImplList.stream().filter(cla -> !cla.getName().contains(BeanFactory.CGLIB_TAG)).collect(Collectors.toList());
+            List<Class<?>> classList = classImplList.stream().filter(cla -> !cla.getName().contains(BeanFactory.CGLIB_TAG))
+                    .collect(Collectors.toList());
             //如果发现多个实现，这里不能进行处理了
             if (classList != null && classList.size() >= 2) {
                 logger.warn(aclassz.getName() + " classImplList is not the only");
@@ -431,4 +437,12 @@ public class BeanFactory {
         }
     }
 
+    /**
+     * 获取所有的class与第一次创建的bean映射
+     */
+    public Map<Class<?>, Bean> getClaMapFirstBean() {
+        Map<Class<?>, Bean> maps = new HashMap<>();
+        objectBeanStorage.forEach((key, value) -> maps.put(key, value.get(0)));
+        return maps;
+    }
 }

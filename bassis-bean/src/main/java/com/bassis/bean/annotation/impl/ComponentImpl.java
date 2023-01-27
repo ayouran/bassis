@@ -3,6 +3,7 @@ package com.bassis.bean.annotation.impl;
 import com.bassis.bean.BeanFactory;
 import com.bassis.bean.Scanner;
 import com.bassis.bean.annotation.Component;
+import com.bassis.bean.annotation.Listener;
 import com.bassis.bean.common.enums.ScopeEnum;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.string.StringUtils;
@@ -71,7 +72,8 @@ public class ComponentImpl {
         logger.debug("@Component分析开始");
         for (Class<?> clz : Scanner.getInstance().getPackageList()) {
             try {
-                if (clz.isAnnotationPresent(Component.class)) analyse(clz);
+                if (clz.isAnnotationPresent(Component.class)) analyseComponent(clz);
+                else if (clz.isAnnotationPresent(Listener.class)) analyseListener(clz);
             } catch (Exception e) {
                 CustomException.throwOut("@Component分析异常：", e);
             }
@@ -227,11 +229,29 @@ public class ComponentImpl {
      *
      * @param clz class实例
      */
-    private static void analyse(Class<?> clz) {
-        logger.debug(clz.getName());
+    private static void analyseComponent(Class<?> clz) {
         Component annotation = clz.getAnnotation(Component.class);
-        //别名
-        String aliasName = annotation.name();
+        analyse(clz, annotation.name());
+    }
+
+    /**
+     * 处理 Listener 注解
+     *
+     * @param clz class实例
+     */
+    private static void analyseListener(Class<?> clz) {
+        Listener annotation = clz.getAnnotation(Listener.class);
+        analyse(clz, annotation.name());
+    }
+
+    /**
+     * Component 处理
+     *
+     * @param clz       类
+     * @param aliasName 别名
+     */
+    private static void analyse(Class<?> clz, String aliasName) {
+        logger.debug(clz.getName());
         //原始名称
         String name = clz.getName();
         if (beansObject.containsKey(name)) CustomException.throwOut(" @Component bean [" + name + "] repeat:" + name);

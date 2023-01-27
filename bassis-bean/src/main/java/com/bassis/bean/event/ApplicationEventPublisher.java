@@ -32,8 +32,11 @@ public class ApplicationEventPublisher {
         if (listeners.containsKey(aclass)) {
             listenerSet = listeners.get(aclass);
         }
-        listenerSet.add(listener);
-        listeners.put(aclass, listenerSet);
+        //避免重复添加监听
+        if (!listenerSet.contains(listener.getClass())){
+            listenerSet.add(listener);
+            listeners.put(aclass, listenerSet);
+        }
     }
 
     /**

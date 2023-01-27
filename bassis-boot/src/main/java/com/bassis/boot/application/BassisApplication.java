@@ -2,10 +2,12 @@ package com.bassis.boot.application;
 
 
 import com.bassis.bean.BeanFactory;
+import com.bassis.bean.common.enums.ModuleEnum;
+import com.bassis.bean.common.enums.ModuleStateEnum;
+import com.bassis.bean.event.ApplicationEventPublisher;
+import com.bassis.bean.event.domain.ModuleEvent;
 import com.bassis.boot.common.ApplicationConfig;
-import com.bassis.boot.common.Declaration;
 import com.bassis.boot.common.MainArgs;
-import com.bassis.tools.exception.CustomException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +21,6 @@ public class BassisApplication {
     private static ApplicationConfig appApplicationConfig = new ApplicationConfig();
     private static final MainArgs mainArgs = MainArgs.getInstance();
     private static boolean startSchemaCoreFag = true;
-    private static  VertxSupport vertxSupport;
 
     /**
      * 带参数启动
@@ -34,61 +35,13 @@ public class BassisApplication {
         //启动 BeanFactory
         logger.debug("BeanFactory start...");
         BeanFactory.startBeanFactory(appApplicationConfig.getScanRoot());
-        vertxSupport = VertxSupport.getInstance();
-        vertxSupport.init(appApplicationConfig);
-        start();
-    }
-
-    /**
-     * 启动框架
-     */
-    private static void start() {
-        logger.debug("Application startSchema : " + appApplicationConfig.getStartSchema());
-        switch (appApplicationConfig.getStartSchema()) {
-            case Declaration.startSchemaWeb:
-                vertxSupport.startHttpServer();
-                break;
-            case Declaration.startSchemaCore:
-                new Thread(() -> {
-                    while (startSchemaCoreFag) {
-                        try {
-                            Thread.sleep(10000);
-                        } catch (Exception e) {
-                            CustomException.throwOut(" start [" + Declaration.startSchemaCore + "] error ", e);
-                        }
-                    }
-                }).start();
-                break;
-            case Declaration.startSchemaRpc:
-                //TODO rpc启动
-                break;
-            default:
-                //web启动
-                vertxSupport.startHttpServer();
-                //TODO rpc启动
-                break;
-        }
+        ApplicationEventPublisher.publishEvent(new ModuleEvent(appApplicationConfig, ModuleEnum.BOOT, ModuleStateEnum.INIT));
     }
 
     /**
      * 停止框架
      */
     private static void stop() {
-        switch (appApplicationConfig.getStartSchema()) {
-            case Declaration.startSchemaWeb:
-                vertxSupport.downHttpServer();
-                break;
-            case Declaration.startSchemaCore:
-                startSchemaCoreFag = false;
-                break;
-            case Declaration.startSchemaRpc:
-                //TODO rpc关闭
-                break;
-            default:
-                //http关闭
-                vertxSupport.downHttpServer();
-                //TODO rpc关闭
-                break;
-        }
+        ApplicationEventPublisher.publishEvent(new ModuleEvent(ModuleEnum.BOOT, ModuleStateEnum.DESTROY));
     }
 }

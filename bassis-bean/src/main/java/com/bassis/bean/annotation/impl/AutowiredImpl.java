@@ -2,6 +2,7 @@ package com.bassis.bean.annotation.impl;
 
 import com.bassis.bean.BeanFactory;
 import com.bassis.bean.annotation.Autowired;
+import com.bassis.bean.annotation.Listener;
 import com.bassis.bean.common.Bean;
 import com.bassis.bean.common.FieldBean;
 import com.bassis.bean.event.ApplicationListener;
@@ -21,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @see Autowired
  */
-public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
+public class AutowiredImpl {
     private final static Logger logger = LoggerFactory.getLogger(AutowiredImpl.class);
     private final BeanFactory beanFactory = BeanFactory.getInstance();
     private final List<FieldBean> fieldBeans = new CopyOnWriteArrayList<>();
@@ -98,9 +99,8 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
     /**
      * 执行注入
      */
-    private void twoStageAutowired() {
+    public void twoStageAutowired() {
         this.fieldBeans.forEach(this::fieldBeanAutowired);
-
     }
 
     /**
@@ -123,10 +123,4 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
         logger.debug(position + " 字段参数注入成功");
         fieldBeans.remove(fieldBean);
     }
-
-    @Override
-    public void onApplicationEvent(AutowiredEvent event) {
-        this.twoStageAutowired();
-    }
-
 }

@@ -4,10 +4,10 @@
 	<parent>
 		<groupId>com.bassis.parent</groupId>
 		<artifactId>bassis-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>bassis-bean</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>bassis-bean</name>
 	<description>bean工厂、ioc注入</description>

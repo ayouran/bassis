@@ -6,10 +6,10 @@
     <parent>
         <groupId>com.bassis.parent</groupId>
         <artifactId>bassis-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.2-SNAPSHOT</version>
     </parent>
     <artifactId>bassis-boot</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>bassis-boot</name>
     <description>boot</description>

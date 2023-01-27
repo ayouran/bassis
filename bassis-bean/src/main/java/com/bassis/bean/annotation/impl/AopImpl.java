@@ -65,7 +65,7 @@ public class AopImpl {
                 //检测参数可用
                 for (Object p : objects) {
                     if (null == p) {
-                        parameters.add("null");
+                        parameters.add("");
                     } else {
                         parameters.add(p);
                     }

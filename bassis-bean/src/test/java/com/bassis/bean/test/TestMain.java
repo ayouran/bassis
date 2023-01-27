@@ -3,7 +3,9 @@ package com.bassis.bean.test;
 import com.bassis.bean.BeanFactory;
 import com.bassis.bean.annotation.impl.AutowiredImpl;
 import com.bassis.bean.common.Bean;
+import com.bassis.bean.common.enums.AutowiredEnum;
 import com.bassis.bean.event.ApplicationEventPublisher;
+import com.bassis.bean.event.ApplicationListener;
 import com.bassis.bean.event.domain.AutowiredEvent;
 import com.bassis.bean.proxy.ProxyFactory;
 import com.bassis.bean.test.service.TestService1;
@@ -43,8 +45,8 @@ public class TestMain {
 
     private static void testApplicationEvent() {
         AutowiredImpl autowired = AutowiredImpl.getInstance();
-        ApplicationEventPublisher.addListener(autowired);
-        ApplicationEventPublisher.publishEvent(new AutowiredEvent(TestService1.class));
+        ApplicationEventPublisher.addListener((ApplicationListener) autowired);
+        ApplicationEventPublisher.publishEvent(new AutowiredEvent(AutowiredEnum.RESOURCE_READY));
 
     }
 

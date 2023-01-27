@@ -8,6 +8,10 @@ bassis
 * 技术为了形成系统，站到更高的层面而学习，而不是单纯为了工作
 
 ### 更新说明
+- 2023-01-27
+  - 实现`@Listener`
+  - 去掉`boot`下的`test`代码，测试全部由`bassis-test`完成
+  - 修复若干`beanFactory`中的bug
 - 2023-01-13
   - 更新`jdk`依赖为`11`,后续不再支持`jdk8`
   - 更新`asm api`为`asm5`
@@ -93,6 +97,7 @@ bassis
 * `bean`工厂
 * 属性循环依赖注入
 * 接口到实现类转换注入
+* `@Listener` 实现
 
 ### bassis_boot
 * ~~main函数启动tomcat~~

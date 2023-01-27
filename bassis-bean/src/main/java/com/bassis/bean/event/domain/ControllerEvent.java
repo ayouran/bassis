@@ -1,4 +1,4 @@
-package com.bassis.boot.event;
+package com.bassis.bean.event.domain;
 
 import com.bassis.bean.event.ApplicationEvent;
 

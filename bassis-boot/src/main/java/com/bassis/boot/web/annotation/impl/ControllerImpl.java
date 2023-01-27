@@ -4,7 +4,7 @@ import com.bassis.bean.BeanFactory;
 import com.bassis.bean.Scanner;
 import com.bassis.bean.annotation.Component;
 import com.bassis.bean.event.ApplicationEventPublisher;
-import com.bassis.boot.event.ControllerEvent;
+import com.bassis.bean.event.domain.ControllerEvent;
 import com.bassis.boot.web.annotation.Controller;
 import com.bassis.boot.web.annotation.RequestMapping;
 import com.bassis.boot.web.annotation.RequestParam;

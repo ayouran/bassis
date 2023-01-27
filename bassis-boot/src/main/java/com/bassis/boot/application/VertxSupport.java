@@ -1,5 +1,9 @@
 package com.bassis.boot.application;
 
+import com.bassis.bean.BeanFactory;
+import com.bassis.bean.common.enums.ModuleEnum;
+import com.bassis.bean.event.ApplicationEventPublisher;
+import com.bassis.bean.event.domain.ModuleEvent;
 import com.bassis.boot.common.ApplicationConfig;
 import com.bassis.boot.common.Declaration;
 import com.bassis.boot.common.HttpPage;
@@ -30,9 +34,60 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static com.bassis.bean.common.enums.ModuleStateEnum.*;
+
 public class VertxSupport {
     private static final long serialVersionUID = 1L;
     private static Logger logger = LoggerFactory.getLogger(VertxSupport.class);
+
+    public void handleModuleBean(ModuleEvent event) {
+        if (event.getModuleStateEnum() == COMPLETE) {
+            VertxSupport.getInstance();
+        } else {
+            logger.warn("ModuleState undefined");
+        }
+    }
+
+    public void handleModuleBoot(ModuleEvent event) {
+        if (event.getModuleStateEnum() == INIT) {
+            this.appApplicationConfig = (ApplicationConfig) event.getSource();
+            logger.debug("Application startSchema : " + appApplicationConfig.getStartSchema());
+            switch (appApplicationConfig.getStartSchema()) {
+                case Declaration.startSchemaCore:
+                    new Thread(BeanFactory::blockStart).start();
+                    break;
+                case Declaration.startSchemaRpc:
+                    //TODO rpc启动
+                    break;
+                case Declaration.startSchemaWeb:
+                    //web启动
+                    this.startHttpServer();
+                default:
+                    //web启动
+                    this.startHttpServer();
+                    break;
+            }
+            ApplicationEventPublisher.publishEvent(new ModuleEvent(ModuleEnum.BOOT, COMPLETE));
+        } else if (event.getModuleStateEnum() == COMPLETE) {
+            logger.info("boot start success");
+        } else if (event.getModuleStateEnum() == DESTROY) {
+            switch (appApplicationConfig.getStartSchema()) {
+                case Declaration.startSchemaCore:
+                    BeanFactory.blockStop(0);
+                    break;
+                case Declaration.startSchemaRpc:
+                    //TODO rpc关闭
+                    break;
+                case Declaration.startSchemaWeb:
+                    this.downHttpServer();
+                default:
+                    this.downHttpServer();
+                    break;
+            }
+        } else {
+            logger.warn("ModuleState undefined");
+        }
+    }
 
     private static class LazyHolder {
         private static final VertxSupport INSTANCE = new VertxSupport();
@@ -54,19 +109,9 @@ public class VertxSupport {
     private Vertx vertx;
 
     /**
-     * 初始化
-     *
-     * @param appApplicationConfig 配置
-     */
-    protected void init(ApplicationConfig appApplicationConfig) {
-        this.appApplicationConfig = appApplicationConfig;
-    }
-
-
-    /**
      * 启动 httpServer
      */
-    protected void startHttpServer() {
+    private void startHttpServer() {
         if (this.appApplicationConfig.getHttpServerOptions() != null) {
             this.httpServer = vertx.createHttpServer(this.appApplicationConfig.getHttpServerOptions());
         } else {
@@ -152,7 +197,7 @@ public class VertxSupport {
     /**
      * 停止 HttpServer
      */
-    protected void downHttpServer() {
+    private void downHttpServer() {
         logger.info("Vertx HTTP server close");
         this.httpServer.close();
     }

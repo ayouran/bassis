@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.bassis.parent</groupId>
     <artifactId>bassis-parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,11 +20,11 @@
         <hibernate.version>5.2.10.Final</hibernate.version>
         <mysql.version>8.0.16</mysql.version>
         <vertx.version>4.2.3</vertx.version>
-        <bassis-tools.version>0.0.1-SNAPSHOT</bassis-tools.version>
-        <bassis-bean.version>0.0.1-SNAPSHOT</bassis-bean.version>
-        <bassis-data.version>0.0.1-SNAPSHOT</bassis-data.version>
-        <bassis-boot.version>0.0.1-SNAPSHOT</bassis-boot.version>
-        <bassis-test.version>0.0.1-SNAPSHOT</bassis-test.version>
+        <bassis-tools.version>0.0.2-SNAPSHOT</bassis-tools.version>
+        <bassis-bean.version>0.0.2-SNAPSHOT</bassis-bean.version>
+        <bassis-data.version>0.0.2-SNAPSHOT</bassis-data.version>
+        <bassis-boot.version>0.0.2-SNAPSHOT</bassis-boot.version>
+        <bassis-test.version>0.0.2-SNAPSHOT</bassis-test.version>
     </properties>
     <modules>
         <module>bassis-tools</module>
