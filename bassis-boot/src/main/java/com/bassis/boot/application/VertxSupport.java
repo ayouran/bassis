@@ -8,6 +8,7 @@ import com.bassis.boot.common.ApplicationConfig;
 import com.bassis.boot.common.Declaration;
 import com.bassis.boot.common.HttpPage;
 import com.bassis.boot.common.MainArgs;
+import com.bassis.boot.event.BassisEvent;
 import com.bassis.boot.web.BassisHttp;
 import com.bassis.boot.web.common.enums.RequestMethodEnum;
 import com.bassis.tools.exception.CustomException;
@@ -42,7 +43,7 @@ public class VertxSupport {
 
     public void handleModuleBean(ModuleEvent event) {
         if (event.getModuleStateEnum() == COMPLETE) {
-            VertxSupport.getInstance();
+            ApplicationEventPublisher.publishEvent(new BassisEvent(ModuleEnum.BEAN));
         } else {
             logger.warn("ModuleState undefined");
         }
@@ -70,6 +71,7 @@ public class VertxSupport {
             ApplicationEventPublisher.publishEvent(new ModuleEvent(ModuleEnum.BOOT, COMPLETE));
         } else if (event.getModuleStateEnum() == COMPLETE) {
             logger.info("boot start success");
+            ApplicationEventPublisher.publishEvent(new BassisEvent(ModuleEnum.BOOT));
         } else if (event.getModuleStateEnum() == DESTROY) {
             switch (appApplicationConfig.getStartSchema()) {
                 case Declaration.startSchemaCore:
