@@ -22,5 +22,3 @@ Content-Type: application/json
   "name": "zs",
   "pwd": "1234"
 }
-
-### bug 第一次请求不会成功，第二次请求才会应用第一次请求的参数
