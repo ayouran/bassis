@@ -21,7 +21,7 @@ bassis
 - 2023-01-27
   - 实现`@Listener`
   - 去掉`boot`下的`test`代码，测试全部由`bassis-test`完成
-  - 修复若干`beanFactory`中的bug
+  - 修复若干`beanFactory`中的`bug`
 - 2023-01-13
   - 更新`jdk`依赖为`11`,后续不再支持`jdk8`
   - 更新`asm api`为`asm5`
