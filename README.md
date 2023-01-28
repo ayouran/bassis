@@ -16,7 +16,7 @@ bassis
     - 保留返回`html`页面的功能，但不完全实现它
     - 在`@RequestMapping`工作前做出路由到方法参数特征标记
   - 修复`boot`下`http`的若干`bug`
-    - json参数的异步处理bug
+    - `json`参数的异步处理`bug`
     - 表单参数的特征判断处理
 - 2023-01-27
   - 实现`@Listener`
