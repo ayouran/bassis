@@ -2,11 +2,8 @@ package com.bassis.bean.annotation.impl;
 
 import com.bassis.bean.BeanFactory;
 import com.bassis.bean.annotation.Autowired;
-import com.bassis.bean.annotation.Listener;
 import com.bassis.bean.common.Bean;
 import com.bassis.bean.common.FieldBean;
-import com.bassis.bean.event.ApplicationListener;
-import com.bassis.bean.event.domain.AutowiredEvent;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.ReflexUtils;
 import com.bassis.tools.string.StringUtils;

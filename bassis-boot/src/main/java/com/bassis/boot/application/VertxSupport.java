@@ -3,12 +3,12 @@ package com.bassis.boot.application;
 import com.bassis.bean.BeanFactory;
 import com.bassis.bean.common.enums.ModuleEnum;
 import com.bassis.bean.event.ApplicationEventPublisher;
+import com.bassis.bean.event.domain.BassisEvent;
 import com.bassis.bean.event.domain.ModuleEvent;
 import com.bassis.boot.common.ApplicationConfig;
 import com.bassis.boot.common.Declaration;
 import com.bassis.boot.common.HttpPage;
 import com.bassis.boot.common.MainArgs;
-import com.bassis.bean.event.domain.BassisEvent;
 import com.bassis.boot.web.BassisHttp;
 import com.bassis.boot.web.common.enums.RequestMethodEnum;
 import com.bassis.tools.exception.CustomException;
@@ -17,12 +17,10 @@ import com.bassis.tools.reflex.ReflexUtils;
 import com.bassis.tools.string.StringUtils;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.file.AsyncFile;
+import io.vertx.core.http.*;
+import io.vertx.ext.web.FileUpload;
+import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
@@ -30,11 +28,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static com.bassis.bean.common.enums.ModuleStateEnum.*;
 
@@ -158,17 +154,22 @@ public class VertxSupport {
      *
      * @param path          相对路由地址
      * @param requestMethod 路由的请求方式
-     * @param function      回调函数
+     * @param consumer      回调函数
+     * @param consumes      请求的 MIME类型 text/html application/json
+     * @param produces      响应的 MIME类型 text/html application/json
      * @param <T>           入参
      * @param <R>           出参
      */
     @SuppressWarnings("all")
-    protected <T, R> void addRouter(String path, RequestMethodEnum requestMethod, Consumer<RoutingContext> consumer) {
+    protected <T, R> void addRouter(String path, RequestMethodEnum requestMethod, String consumes, String produces, Consumer<RoutingContext> consumer) {
         path = getRouterPath(path);
         String finalPath = path;
         HttpMethod httpMethod = getHttpMethod(requestMethod);
-        logger.info("HTTP addRouter :{} httpMethod:{}", finalPath, httpMethod.name());
-        router.route(httpMethod, path).handler(req -> {
+        logger.info("HTTP addRouter :{} httpMethod:{} consumes:{} produces:{}", finalPath, httpMethod.name(), consumes, produces);
+        Route route = router.route(httpMethod, path);
+        if (!StringUtils.isEmptyString(consumes)) route.consumes(consumes);
+        if (!StringUtils.isEmptyString(produces)) route.produces(produces);
+        route.handler(req -> {
             logger.info("HTTP routerHandler :{} httpMethod:{}", finalPath, req.request().method());
             consumer.accept(req);
         });
@@ -209,62 +210,21 @@ public class VertxSupport {
      * 注册所有的业务路由
      */
     private void registerRouterService() {
-        bassisHttp.getRequestPaths().forEach((key, value) -> {
-            for (RequestMethodEnum requestMethod : value) {
-                this.addRouterService(key, requestMethod);
+        bassisHttp.getRequestPaths().forEach(m -> {
+            for (RequestMethodEnum requestMethod : m.getRequestMethodEnums()) {
+                this.addRouterService(m.getPath(), requestMethod, m.getWrapClass());
             }
         });
     }
 
-    /**
-     * 添加一个使用bean处理并且输出为json的路由
-     *
-     * @param path 路由
-     */
-    @SuppressWarnings("all")
-    private void addRouterService(String path, RequestMethodEnum requestMethod) {
-        AtomicReference<Object> resObj = new AtomicReference<>();
-        this.addRouterPage(path, requestMethod, null, (req) -> {
-            AtomicBoolean lock = new AtomicBoolean(false);
-            HttpServerRequest request = req.request();
-            HttpServerResponse response = req.response();
-            request.bodyHandler(body -> {
-                if (body != null && body.length() > 0) {
-                    lock.set(true);
-                    JsonObject jsonObject = new JsonObject();
-                    if (body != null) jsonObject = new JsonObject(body);
-                    LinkedHashMap<String, Object> requestParameters = new LinkedHashMap<>();
-                    requestParameters.put("@body", jsonObject.toString());
-                    resObj.set(bassisHttp.service(path, requestParameters));
-                }
-            });
-            String contentType = request.getHeader("content-type");
-            if (!lock.get() && (contentType == null || !contentType.contains("application/json"))) {
-                LinkedHashMap<String, Object> requestParameters = new LinkedHashMap<>();
-                MultiMap multiMap = request.params();
-                if (multiMap != null && !multiMap.isEmpty()) {
-                    multiMap.entries().forEach(m -> {
-                        requestParameters.put(m.getKey(), m.getValue());
-                    });
-                }
-                resObj.set(bassisHttp.service(path, requestParameters));
-            }
-            String accept = response.headers().get("accept");
-            if (StringUtils.isEmptyString(accept)) {
-                accept = response.headers().get("content-type");
-            }
-            if (accept.contains("application/json")) return GsonUtils.objectToJson(resObj.get());
-            else return resObj.get();
-        });
-    }
 
     /**
      * 配置默认的错误页面
      */
     private void defaultErrorPage() {
-        this.addRouterPage("/404", null, HttpPage.ERROR_404, (req) -> null);
-        this.addRouterPage("/500", null, HttpPage.ERROR_500, (req) -> null);
-        this.addRouterPage("/503", null, HttpPage.ERROR_503, (req) -> null);
+        this.addRouterPage("/404", null, HttpPage.ERROR_404, false);
+        this.addRouterPage("/500", null, HttpPage.ERROR_500, false);
+        this.addRouterPage("/503", null, HttpPage.ERROR_503, false);
     }
 
     /**
@@ -295,28 +255,71 @@ public class VertxSupport {
     }
 
     /**
+     * 添加一个使用bean处理并且输出为json的路由
+     *
+     * @param path 路由
+     */
+    @SuppressWarnings("all")
+    private void addRouterService(String path, RequestMethodEnum requestMethod, Boolean customParameters) {
+        this.addRouterPage(path, requestMethod, null, customParameters);
+    }
+
+    /**
      * 配置请求返回一个页面
      */
-    protected <T, R> void addRouterPage(String path, RequestMethodEnum requestMethod, String htmlFile, Function<RoutingContext, R> function) {
-        this.addRouter(path, requestMethod, (req) -> {
+    protected <T, R> void addRouterPage(String path, RequestMethodEnum requestMethod, String htmlFile, Boolean customParameters) {
+        String consumes = "text/html";
+        String produces = "text/html";
+        if (StringUtils.isEmptyString(htmlFile)) {
+            consumes = "application/json";
+            produces = "application/json";
+            if (customParameters) {
+                consumes = "application/x-www-form-urlencoded";
+            }
+        }
+        this.addRouter(path, requestMethod, consumes, produces, (req) -> {
+            HttpServerRequest request = req.request();
             HttpServerResponse response = req.response();
-            if (!StringUtils.isEmptyString(htmlFile)) {
-                if (function != null) function.apply(req);
-                response.putHeader("content-type", "text/html;charset=utf-8");
-                response.sendFile(getHtmlFilePath(htmlFile));
-            } else {
-                response.putHeader("content-type", "application/json;charset=utf-8");
-                if (function == null) {
-                    response.send(Json.encode("ok"));
+            request.bodyHandler(body -> {
+                if (body != null && body.length() > 0) {
+                    LinkedHashMap<String, Object> requestParameters = new LinkedHashMap<>();
+                    requestParameters.put("@body", body.toString());
+                    response(response, htmlFile, bassisHttp.service(path, requestParameters));
                 }
-                Object resObj = function.apply(req);
-                if (Objects.isNull(resObj)) {
-                    response.send(Json.encode("ok"));
-                } else {
-                    response.send(Json.encode(resObj));
+            });
+            request.uploadHandler(handler -> {
+                AsyncFile upload = handler.file();
+            });
+            String contentType = request.getHeader("content-type");
+            if (contentType == null || !contentType.contains("application/json")) {
+                LinkedHashMap<String, Object> requestParameters = new LinkedHashMap<>();
+                MultiMap multiMap = request.params();
+                if (multiMap != null && !multiMap.isEmpty()) {
+                    multiMap.entries().forEach(m -> requestParameters.put(m.getKey(), m.getValue()));
                 }
+                response(response, htmlFile, bassisHttp.service(path, requestParameters));
             }
         });
+    }
+
+    /**
+     * 返回
+     *
+     * @param response http返回
+     * @param htmlFile 页面地址
+     * @param resObj   返回结果
+     */
+    private void response(HttpServerResponse response, String htmlFile, Object resObj) {
+        if (!StringUtils.isEmptyString(htmlFile)) {
+            response.sendFile(getHtmlFilePath(htmlFile));
+        } else {
+            response.putHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+            if (Objects.isNull(resObj)) {
+                response.send(GsonUtils.objectToJson("null"));
+            } else {
+                response.send(GsonUtils.objectToJson(resObj));
+            }
+        }
     }
 
     /**
@@ -326,6 +329,6 @@ public class VertxSupport {
         if (StringUtils.isEmptyString(locationPath)) {
             locationPath = "/index";
         }
-        this.addRouterPage(locationPath, null, HttpPage.INDEX, (req) -> null);
+        this.addRouterPage(locationPath, null, HttpPage.INDEX, false);
     }
 }

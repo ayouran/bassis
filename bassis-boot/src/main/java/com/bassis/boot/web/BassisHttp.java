@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Servlet 核心容器
@@ -40,8 +41,54 @@ public class BassisHttp {
     /**
      * 获取路由列表
      */
-    public Map<String, RequestMethodEnum[]> getRequestPaths() {
-        return controller.getRequestPaths();
+    public List<RequestPath> getRequestPaths() {
+        return controller.getRequestPaths().entrySet().stream().map(m -> {
+            String path = String.valueOf(m.getKey());
+            Method method = ControllerImpl.getMapMethod(path);
+            List<Object> parameters = ControllerImpl.getMapParameter(method);
+            Class<?> type = (Class<?>) parameters.get(1);
+            return new RequestPath(path, m.getValue(), ReflexUtils.isWrapClass(type));
+        }).collect(Collectors.toList());
+    }
+
+    public static class RequestPath {
+        private String path;
+        private RequestMethodEnum[] requestMethodEnums;
+        //不是基础数据类型为false
+        private Boolean isWrapClass;
+
+        public RequestPath() {
+        }
+
+        public RequestPath(String path, RequestMethodEnum[] requestMethodEnums, Boolean isWrapClass) {
+            this.path = path;
+            this.requestMethodEnums = requestMethodEnums;
+            this.isWrapClass = isWrapClass;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public RequestMethodEnum[] getRequestMethodEnums() {
+            return requestMethodEnums;
+        }
+
+        public void setRequestMethodEnums(RequestMethodEnum[] requestMethodEnums) {
+            this.requestMethodEnums = requestMethodEnums;
+        }
+
+        public Boolean getWrapClass() {
+            return isWrapClass;
+        }
+
+        public void setWrapClass(Boolean wrapClass) {
+            isWrapClass = wrapClass;
+        }
     }
 
     /**
@@ -96,8 +143,9 @@ public class BassisHttp {
             }
             //交由bean进行生产
             Bean bean = beanFactory.createBean(actionCla);
+            logger.info("执行参数 :{}", GsonUtils.objectToJson(arrayParameters));
             resInvoke = Reflection.invokeMethod(bean.getObject(), method, arrayParameters);
-            logger.info("resInvoke : " + resInvoke);
+            logger.info("resInvoke :{}", GsonUtils.objectToJson(resInvoke));
             //清除资源
             beanFactory.removeBean(bean);
         } catch (Exception e) {

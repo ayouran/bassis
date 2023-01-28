@@ -8,7 +8,6 @@ import com.bassis.bean.common.enums.ModuleStateEnum;
 import com.bassis.bean.event.ApplicationEventPublisher;
 import com.bassis.bean.event.ApplicationListener;
 import com.bassis.bean.event.domain.AutowiredEvent;
-import com.bassis.bean.event.domain.ControllerEvent;
 import com.bassis.bean.event.domain.ModuleEvent;
 
 @Listener
