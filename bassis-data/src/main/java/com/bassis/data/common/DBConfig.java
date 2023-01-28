@@ -7,11 +7,26 @@ import java.io.Serializable;
  */
 public class DBConfig implements Serializable {
     private static final long serialVersionUID = 1L;
-    String prefix;
-    String jdbcUrl;
-    String userName;
-    String passWord;
-    String drivers;
+    /**
+     * jdbc no 前缀
+     */
+    private String prefix;
+    /**
+     * jdbc连接地址
+     */
+    private String jdbcUrl;
+    /**
+     * 数据库用户名
+     */
+    private String userName;
+    /**
+     * 数据库密码
+     */
+    private String passWord;
+    /**
+     * 数据库驱动
+     */
+    private String drivers;
 
     public String getPrefix() {
         return prefix;

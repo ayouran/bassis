@@ -30,7 +30,7 @@ public class JdbcSupervisor {
     //jdbctools 组存储器   组名 / 唯一id 、是否可用
     private static Map<String, Map<String, Boolean>> group = new ConcurrentHashMap<>();
     //db配置存储 组名/配置类
-    private static Map<String, DBConfig> configMap = new HashMap<>();
+    private static Map<String, DBConfig> configMap = new ConcurrentHashMap<>();
     //最小连接数
     private final static int MIN_COUNT = 10;
     //最大连接数
@@ -89,7 +89,8 @@ public class JdbcSupervisor {
      * @return 返回工具类
      */
     public synchronized JdbcTools getRandomJdbcTools(String prefix) {
-        String no = group.get(prefix).entrySet().stream().filter(Map.Entry::getValue).findFirst().map(Map.Entry::getKey).orElse("");
+        String no = group.get(prefix).entrySet().stream().filter(Map.Entry::getValue).findFirst()
+                .map(Map.Entry::getKey).orElse("");
         JdbcTools jdbcTools;
         if (StringUtils.isEmptyString(no)) {
             jdbcTools = createJdbcTools(configMap.get(prefix));
@@ -98,7 +99,6 @@ public class JdbcSupervisor {
             //将其置为占用状态防止其他人使用
             group.get(prefix).put(no, false);
         }
-
         return jdbcTools;
     }
 

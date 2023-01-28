@@ -49,7 +49,9 @@ public class JdbcTools {
      */
     protected Connection initConnection() {
         if (this.conn != null) return this.conn;
-        if (StringUtils.isEmptyString(dbConfig.getJdbcUrl()) || StringUtils.isEmptyString(dbConfig.getUserName()) || StringUtils.isEmptyString(dbConfig.getPassWord()))
+        if (StringUtils.isEmptyString(dbConfig.getJdbcUrl())
+                || StringUtils.isEmptyString(dbConfig.getUserName())
+                || StringUtils.isEmptyString(dbConfig.getPassWord()))
             CustomException.throwOut("数据库连接参数错误");
 
         try {
